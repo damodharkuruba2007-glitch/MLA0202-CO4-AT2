@@ -1,0 +1,53 @@
+print("FRAUD DETECTION USING BAYESIAN NETWORK\n")
+P_Fraud = 0.20
+P_NotFraud = 0.80
+
+# Conditional probabilities
+P_HighAmount_Fraud = 0.90
+P_HighAmount_NotFraud = 0.20
+
+P_UnusualLocation_Fraud = 0.80
+P_UnusualLocation_NotFraud = 0.30
+
+P_UnknownDevice_Fraud = 0.70
+P_UnknownDevice_NotFraud = 0.20
+
+P_PreviousFraud_Fraud = 0.85
+P_PreviousFraud_NotFraud = 0.10
+print("Customer Transaction")
+print("Amount            : High")
+print("Location          : Unusual")
+print("Login Device      : Unknown")
+print("Previous Fraud    : Yes\n")
+fraud_score = (
+    P_Fraud *
+    P_HighAmount_Fraud *
+    P_UnusualLocation_Fraud *
+    P_UnknownDevice_Fraud *
+    P_PreviousFraud_Fraud
+)
+
+notfraud_score = (
+    P_NotFraud *
+    P_HighAmount_NotFraud *
+    P_UnusualLocation_NotFraud *
+    P_UnknownDevice_NotFraud *
+    P_PreviousFraud_NotFraud
+)
+total = fraud_score + notfraud_score
+fraud_probability = fraud_score / total
+notfraud_probability = notfraud_score / total
+print("----- Prediction Result -----")
+print("Fraud Probability      :", round(fraud_probability * 100, 2), "%")
+print("Legitimate Probability :", round(notfraud_probability * 100, 2), "%")
+
+if fraud_probability > notfraud_probability:
+    print("\nPrediction : FRAUDULENT TRANSACTION")
+else:
+    print("\nPrediction : LEGITIMATE TRANSACTION")
+
+print("\nInterpretation:")
+print("The Bayesian Network combines transaction amount, location, device,")
+print("and previous fraud history to estimate the probability of fraud.")
+print("Banks use this prediction to block or verify suspicious transactions.")
+print("Damodhar(192525266)")
