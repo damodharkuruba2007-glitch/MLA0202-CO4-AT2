@@ -1,0 +1,142 @@
+print("PREDICTIVE MACHINE MAINTENANCE USING HMM\n")
+states = ["Healthy", "Warning", "Failure"]
+observations = [
+    "Normal",
+    "Slightly Abnormal",
+    "Highly Abnormal"
+]
+
+initial = {
+    "Healthy": 0.70,
+    "Warning": 0.25,
+    "Failure": 0.05
+}
+transition = {
+    "Healthy": {
+        "Healthy": 0.80,
+        "Warning": 0.18,
+        "Failure": 0.02
+    },
+
+    "Warning": {
+        "Healthy": 0.10,
+        "Warning": 0.75,
+        "Failure": 0.15
+    },
+
+    "Failure": {
+        "Healthy": 0.02,
+        "Warning": 0.18,
+        "Failure": 0.80
+    }
+}
+emission = {
+    "Healthy": {
+        "Normal": 0.80,
+        "Slightly Abnormal": 0.18,
+        "Highly Abnormal": 0.02
+    },
+
+    "Warning": {
+        "Normal": 0.20,
+        "Slightly Abnormal": 0.60,
+        "Highly Abnormal": 0.20
+    },
+
+    "Failure": {
+        "Normal": 0.05,
+        "Slightly Abnormal": 0.20,
+        "Highly Abnormal": 0.75
+    }
+}
+sensor_sequence = [
+    "Normal",
+    "Slightly Abnormal",
+    "Highly Abnormal",
+    "Highly Abnormal"
+]
+
+print("Sensor Observations:")
+for obs in sensor_sequence:
+    print("-", obs)
+viterbi = []
+path = []
+
+# First observation
+first = sensor_sequence[0]
+
+first_prob = {}
+
+for state in states:
+    first_prob[state] = (
+        initial[state] *
+        emission[state][first]
+    )
+
+viterbi.append(first_prob)
+for t in range(1, len(sensor_sequence)):
+
+    current_observation = sensor_sequence[t]
+
+    current_prob = {}
+    current_path = {}
+
+    for current_state in states:
+
+        best_probability = 0
+        best_previous_state = None
+
+        for previous_state in states:
+
+            probability = (
+                viterbi[t - 1][previous_state]
+                * transition[previous_state][current_state]
+                * emission[current_state][current_observation]
+            )
+
+            if probability > best_probability:
+                best_probability = probability
+                best_previous_state = previous_state
+
+        current_prob[current_state] = best_probability
+        current_path[current_state] = best_previous_state
+
+    viterbi.append(current_prob)
+    path.append(current_path)
+
+last_state = max(
+    viterbi[-1],
+    key=viterbi[-1].get
+)
+best_states = [last_state]
+
+for t in range(len(path) - 1, -1, -1):
+    previous_state = path[t][best_states[-1]]
+    best_states.append(previous_state)
+
+best_states.reverse()
+
+print("\nPredicted Machine States:")
+
+for i in range(len(sensor_sequence)):
+    print(
+        sensor_sequence[i],
+        "->",
+        best_states[i]
+    )
+print("\nFinal Machine Condition:",
+      best_states[-1])
+
+print("\nInterpretation:")
+
+if best_states[-1] == "Healthy":
+    print("The machine is operating normally.")
+elif best_states[-1] == "Warning":
+    print("The machine requires inspection and maintenance.")
+else:
+    print("The machine is likely to fail. Immediate maintenance is recommended.")
+
+print("\nPredictive Maintenance Benefit:")
+print("HMM helps identify hidden machine conditions from sensor data.")
+print("Early detection of warning or failure reduces equipment downtime.")
+print("Damodhar(192525266)")
